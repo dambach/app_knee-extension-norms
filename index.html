@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PredKneeExt · Knee extensor strength at 90°</title>
+<meta name="description" content="Isometric knee extensor strength at 90° knee flexion compared with published reference equations, as % of predicted and z-score against the lower limit of normal.">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header>
+  <h1>PredKneeExt</h1>
+  <p class="lead">Isometric knee extensor strength measured at 90° knee flexion, compared with three published reference equations. The result is given as % of predicted and z-score against the lower limit of normal.</p>
+</header>
+
+<main>
+  <form id="inputs" class="card" autocomplete="off" onsubmit="return false">
+    <fieldset>
+      <legend>Patient</legend>
+      <div class="field">
+        <span id="sex-label" class="label">Sex</span>
+        <div class="seg" role="radiogroup" aria-labelledby="sex-label">
+          <label><input type="radio" name="sex" value="male" checked><span>Male</span></label>
+          <label><input type="radio" name="sex" value="female"><span>Female</span></label>
+        </div>
+      </div>
+      <div class="field">
+        <label for="age">Age</label>
+        <div class="unit-input"><input id="age" type="number" inputmode="decimal" min="0" max="120" step="1" value="65"><span>yr</span></div>
+      </div>
+      <div class="field">
+        <label for="height">Height</label>
+        <div class="unit-input"><input id="height" type="number" inputmode="decimal" min="0" max="250" step="1" value="170"><span>cm</span></div>
+      </div>
+      <div class="field">
+        <label for="weight">Weight</label>
+        <div class="unit-input"><input id="weight" type="number" inputmode="decimal" min="0" max="300" step="0.1" value="70"><span>kg</span></div>
+      </div>
+      <div class="field">
+        <label for="ffm">Fat-free mass<small>Needed for Seymour et al. 2010</small></label>
+        <div class="unit-input"><input id="ffm" type="number" inputmode="decimal" min="0" max="200" step="0.1" placeholder="—"><span>kg</span></div>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Measurement</legend>
+      <div class="field">
+        <span id="side-label" class="label">Side tested<small>Used by Hogrel et al. 2007</small></span>
+        <div class="seg" role="radiogroup" aria-labelledby="side-label">
+          <label><input type="radio" name="side" value="right" checked><span>Right</span></label>
+          <label><input type="radio" name="side" value="left"><span>Left</span></label>
+        </div>
+      </div>
+      <div class="field">
+        <label for="measured">Measured strength<small>Knee at 90° flexion</small></label>
+        <div class="measured-row">
+          <input id="measured" type="number" inputmode="decimal" min="0" step="0.1" value="30" aria-label="Measured strength value">
+          <select id="unit" aria-label="Unit of measured strength">
+            <option value="kg" selected>kg</option>
+            <option value="Nm">N·m</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label for="lever">Lever arm<small>Knee joint axis (lateral femoral condyle) to center of the strap. Needed to convert kg ↔ N·m</small></label>
+        <div class="unit-input"><input id="lever" type="number" inputmode="decimal" min="0" max="60" step="0.5" placeholder="—"><span>cm</span></div>
+      </div>
+    </fieldset>
+  </form>
+
+  <section class="card results" aria-labelledby="results-title">
+    <h2 id="results-title">Measured strength vs healthy reference</h2>
+    <p class="sub">z-score = (measured − predicted) / residual SD of each equation. The shaded zone is below the lower limit of normal (LLN, 5th percentile of healthy adults, z &lt; −1.645), the weakness threshold used by Seymour et al. 2010 and Tanguay et al. 2023.</p>
+    <p class="measured-summary" id="measured-summary"></p>
+
+    <div class="chart" id="chart">
+      <div class="grid-layer" id="grid-layer" aria-hidden="true"></div>
+      <div id="rows"></div>
+      <span class="axis-title" aria-hidden="true">z-score</span>
+      <span class="col-head" aria-hidden="true">% pred.<br>z-score</span>
+    </div>
+
+    <details class="table-view">
+      <summary>Show values as a table</summary>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Reference</th><th class="num">Predicted</th><th class="num">LLN</th><th class="num">Measured</th><th class="num">% pred.</th><th class="num">z</th><th>Notes</th></tr>
+          </thead>
+          <tbody id="table-body"></tbody>
+        </table>
+      </div>
+    </details>
+  </section>
+</main>
+
+<section class="refs" aria-labelledby="refs-title"><div class="card">
+  <h2 id="refs-title">Reference equations and test protocols</h2>
+  <p class="note" style="margin-top:0">All three protocols test the knee at 90° of flexion. A result is only interpretable against a reference whose position, device and trial selection match the measurement protocol.</p>
+  <div class="ref-grid" id="refs-list"></div>
+</div></section>
+
+<footer>
+  <p>Written and maintained by <a href="https://damienbachasson.netlify.app" target="_blank" rel="noopener">Damien Bachasson</a>.</p>
+  <p><b>Disclaimer.</b> The information on this page is for information purposes only. It is not intended to be a substitute for professional medical advice, diagnosis or treatment. Any question regarding a medical condition or treatment should be addressed to a physician or other qualified health care provider.</p>
+</footer>
+
+<div class="tooltip" id="tooltip" role="tooltip"></div>
+
+<script src="js/equations.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

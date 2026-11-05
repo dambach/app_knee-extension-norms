@@ -1,0 +1,8 @@
+.DS_Store
+node_modules/
+.vscode/
+
+# Articles are copyrighted: keep them out of the repository
+*.pdf
+*.docx
+docs/articles/
