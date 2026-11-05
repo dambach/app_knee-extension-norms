@@ -169,7 +169,17 @@ input:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 .track .stem { position: absolute; top: 19px; height: 3px; border-radius: 2px; background: var(--accent); }
 .track .pt { position: absolute; top: 20px; width: 16px; height: 16px; margin: -8px 0 0 -8px; border-radius: 999px; background: var(--accent); box-shadow: 0 0 0 3px var(--surface); }
 .track .pt.clipped { background: var(--surface); border: 3px solid var(--accent); }
-.chart-row:hover .pt { box-shadow: 0 0 0 3px var(--surface), 0 0 0 5px var(--accent); }
+.chart-row[role="button"] { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+@media (hover: hover) {
+  .chart-row:hover .pt { box-shadow: 0 0 0 3px var(--surface), 0 0 0 5px var(--accent); }
+}
+.ref-name { display: flex; align-items: center; gap: 6px; }
+.row-toggle { display: inline-flex; color: var(--muted); }
+.row-toggle svg { transition: transform .15s ease; }
+.chart-row[aria-expanded="true"] .row-toggle svg { transform: rotate(180deg); }
+.row-detail { margin: 0 0 14px; padding: 10px 14px; background: var(--ground); border-radius: 10px; font-size: 13px; line-height: 1.45; }
+.row-detail .tt-row { max-width: 340px; }
+.row-detail .tt-note { max-width: 640px; }
 .track .msg { position: absolute; inset: 0; display: flex; align-items: center; gap: 8px; padding: 0 12px; border-radius: 10px; font-size: 13.5px; color: var(--ink-2); overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 .track .msg.missing { border: 1px dashed var(--border-strong); }
 .track .msg.info { background: var(--ground); }
@@ -344,6 +354,7 @@ td.notes { color: var(--ink-2); }
     -webkit-print-color-adjust: exact; print-color-adjust: exact;
   }
   .chart-row:hover .pt { box-shadow: 0 0 0 3px var(--surface); }
+  .row-toggle { display: none; }
   details.table-view { margin-top: 10px; }
   table { font-size: 9pt; }
 
@@ -359,5 +370,6 @@ td.notes { color: var(--ink-2); }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
+  .row-toggle svg { transition: none; }
   .sticky-bar { transition: none; }
 }

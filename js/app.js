@@ -5,6 +5,8 @@
 const Z_FLOOR = -8, Z_CEIL = 4;
 // Last computed inputs and results, read by the export.
 let lastState = null;
+// Rows whose detail panel is open (kept across re-renders).
+const openRows = new Set();
 const FIELD_LABELS = { age: 'age', height: 'height', weight: 'weight', ffm: 'fat-free mass', measured: 'measured strength', lever: 'lever arm' };
 
 const $ = id => document.getElementById(id);
@@ -19,6 +21,7 @@ const ICON = {
   info: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 8h.01"/></svg>',
   pencil: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>',
   alert: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v5"/><path d="M12 16h.01"/></svg>',
+  chevron: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>',
   lowArrow: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--low-line)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="below the lower limit of normal"><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></svg>'
 };
 
@@ -95,12 +98,27 @@ function trackHtml(r, x, zMin, zMax) {
   return html;
 }
 
+// Each row is a button that shows or hides its detail panel.
+const rowAttrs = i => `role="button" tabindex="0" aria-expanded="${openRows.has(i)}" aria-controls="detail-${i}"`;
+
+// Values and notes of one reference: used by the row detail panel and the mouse tooltip.
+function detailHtml({ eq, r }) {
+  if (!r.ok) return `<div class="tt-row">${r.reason}</div>`;
+  const u = UNIT_LABEL[eq.unit];
+  return `<div class="tt-row">Predicted <b>${fmt(r.predicted, eq.unit)} ${u}</b></div>
+    ${r.pctOnly ? '' : `<div class="tt-row">LLN (5th pct) <b>${fmt(r.lln, eq.unit)} ${u}</b></div>`}
+    <div class="tt-row">Measured <b>${fmt(r.measured, eq.unit)} ${u}</b></div>
+    <div class="tt-row">% predicted <b>${r.pct.toFixed(0)} %</b></div>
+    ${r.pctOnly ? '' : `<div class="tt-row">z-score <b>${fmtZ(r.z)}</b></div>`}` +
+    [...r.warnings, eq.trialNote, eq.deviceNote].filter(Boolean).map(w => `<div class="tt-note">${w}</div>`).join('');
+}
+
 function rowHtml({ eq, r }, i, x, zMin, zMax) {
-  const head = `<p class="ref-name">${refName(eq)}</p><p class="proto">${eq.protoShort}</p>`;
+  const head = `<p class="ref-name">${refName(eq)}<span class="row-toggle" aria-hidden="true">${ICON.chevron}</span></p><p class="proto">${eq.protoShort}</p>`;
   const note = text => `<span class="note">${ICON.info}${text}</span>`;
   if (!r.ok) {
     const icon = r.invalid ? ICON.alert : ICON.pencil;
-    return `<div class="chart-row" data-i="${i}" tabindex="0" aria-label="${refName(eq)}: not computed. ${r.reason}">
+    return `<div class="chart-row" data-i="${i}" ${rowAttrs(i)} aria-label="${refName(eq)}: not computed. ${r.reason}">
       <div class="name">${head}<div class="chips"><span class="chip na">Not computed</span></div></div>
       <div class="plot"><div class="track"><div class="msg missing${r.invalid ? ' invalid' : ''}">${icon}${r.reason}</div></div>
       <div class="vals"><p class="pct empty">—</p><p class="z">&nbsp;</p></div></div></div>`;
@@ -112,7 +130,7 @@ function rowHtml({ eq, r }, i, x, zMin, zMax) {
     r.atEdge && note('Atypical vs reference sample')
   ].filter(Boolean).join('');
   if (r.pctOnly) {
-    return `<div class="chart-row" data-i="${i}" tabindex="0" aria-label="${refName(eq)}: ${r.pct.toFixed(0)} percent of predicted; z-score not shown for women">
+    return `<div class="chart-row" data-i="${i}" ${rowAttrs(i)} aria-label="${refName(eq)}: ${r.pct.toFixed(0)} percent of predicted; z-score not shown for women">
       <div class="name">${head}<div class="chips"><span class="chip na">% predicted only</span>${notes}</div></div>
       <div class="plot"><div class="track"><div class="msg info">z-score not shown for women</div></div>
       <div class="vals"><p class="pct">${r.pct.toFixed(0)} %</p><p class="z">z —</p></div></div></div>`;
@@ -121,7 +139,7 @@ function rowHtml({ eq, r }, i, x, zMin, zMax) {
   const chip = low
     ? `<span class="chip low">${ICON.down}Below LLN</span>`
     : `<span class="chip ok">${ICON.check}Within normal</span>`;
-  return `<div class="chart-row" data-i="${i}" tabindex="0"
+  return `<div class="chart-row" data-i="${i}" ${rowAttrs(i)}
       aria-label="${refName(eq)}: ${r.pct.toFixed(0)} percent of predicted, z-score ${r.z.toFixed(2)}${low ? ', below the lower limit of normal' : ''}">
     <div class="name">${head}<div class="chips">${chip}${notes}</div></div>
     <div class="plot"><div class="track">${trackHtml(r, x, zMin, zMax)}</div>
@@ -163,7 +181,8 @@ function render() {
   }
   $('axis').innerHTML = axis;
 
-  $('rows').innerHTML = results.map((res, i) => rowHtml(res, i, x, zMin, zMax)).join('');
+  $('rows').innerHTML = results.map((res, i) => `<div class="chart-item">${rowHtml(res, i, x, zMin, zMax)}
+    <div class="row-detail" id="detail-${i}"${openRows.has(i) ? '' : ' hidden'}>${detailHtml(res)}</div></div>`).join('');
 
   // Table view
   $('table-body').innerHTML = results.map(({ eq, r }) => {
@@ -218,16 +237,8 @@ function renderRefs() {
 // Tooltip on hover / focus
 const tip = $('tooltip');
 function showTip(row, clientX, clientY) {
-  const { eq, r } = window.__results[+row.dataset.i];
-  const u = UNIT_LABEL[eq.unit];
-  tip.innerHTML = `<div class="tt-title">${refName(eq)}</div>` + (r.ok
-    ? `<div class="tt-row">Predicted <b>${fmt(r.predicted, eq.unit)} ${u}</b></div>
-       ${r.pctOnly ? '' : `<div class="tt-row">LLN (5th pct) <b>${fmt(r.lln, eq.unit)} ${u}</b></div>`}
-       <div class="tt-row">Measured <b>${fmt(r.measured, eq.unit)} ${u}</b></div>
-       <div class="tt-row">% predicted <b>${r.pct.toFixed(0)} %</b></div>
-       ${r.pctOnly ? '' : `<div class="tt-row">z-score <b>${fmtZ(r.z)}</b></div>`}` +
-      [...r.warnings, eq.trialNote, eq.deviceNote].filter(Boolean).map(w => `<div class="tt-note">${w}</div>`).join('')
-    : `<div class="tt-row">${r.reason}</div>`);
+  const res = window.__results[+row.dataset.i];
+  tip.innerHTML = `<div class="tt-title">${refName(res.eq)}</div>` + detailHtml(res);
   const pad = 14, rect = tip.getBoundingClientRect();
   let left = clientX + pad, top = clientY + pad;
   if (left + rect.width > window.innerWidth - 8) left = clientX - rect.width - pad;
@@ -240,27 +251,38 @@ function showTip(row, clientX, clientY) {
   tip.classList.add('show');
 }
 const rows = $('rows');
-rows.addEventListener('mousemove', e => {
+const hideTip = () => tip.classList.remove('show');
+
+// The floating tooltip is for a mouse only. Touch input is ignored here, so iOS does
+// not treat a tap as a hover (which would swallow the click).
+rows.addEventListener('pointermove', e => {
+  if (e.pointerType !== 'mouse') return;
   const row = e.target.closest('.chart-row');
-  row ? showTip(row, e.clientX, e.clientY) : tip.classList.remove('show');
+  if (row && !openRows.has(+row.dataset.i)) showTip(row, e.clientX, e.clientY);
+  else hideTip();
 });
-rows.addEventListener('mouseleave', () => tip.classList.remove('show'));
-rows.addEventListener('focusin', e => {
+rows.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse') hideTip(); });
+window.addEventListener('scroll', hideTip, { passive: true });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') hideTip(); });
+
+// Tap, click, Enter or Space shows or hides the row detail.
+function toggleRow(row) {
+  const i = +row.dataset.i;
+  const open = !openRows.has(i);
+  open ? openRows.add(i) : openRows.delete(i);
+  row.setAttribute('aria-expanded', String(open));
+  $(`detail-${i}`).hidden = !open;
+  hideTip();
+}
+rows.addEventListener('click', e => {
+  const row = e.target.closest('.chart-row');
+  if (row) toggleRow(row);
+});
+rows.addEventListener('keydown', e => {
   const row = e.target.closest('.chart-row');
   if (!row) return;
-  const b = row.getBoundingClientRect();
-  showTip(row, b.left + b.width / 2, b.bottom);
+  if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleRow(row); }
 });
-rows.addEventListener('focusout', () => tip.classList.remove('show'));
-// Touch screens have no mouseleave and tapping a blank area may not remove focus:
-// a tap outside the rows, a scroll or Escape closes the tooltip.
-const hideTip = () => {
-  tip.classList.remove('show');
-  if (document.activeElement && document.activeElement.classList.contains('chart-row')) document.activeElement.blur();
-};
-document.addEventListener('pointerdown', e => { if (!e.target.closest('.chart-row')) hideTip(); });
-window.addEventListener('scroll', () => tip.classList.remove('show'), { passive: true });
-rows.addEventListener('keydown', e => { if (e.key === 'Escape') hideTip(); });
 
 // Export: printable report and CSV. Patient ID and date are read only here and
 // never stored or sent.
