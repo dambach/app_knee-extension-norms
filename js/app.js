@@ -311,7 +311,13 @@ window.addEventListener('afterprint', () => { tableView.open = tableWasOpen; });
 $('measurement-date').value = localDate(new Date());
 $('patient-id').addEventListener('input', fillPrintHead);
 $('measurement-date').addEventListener('input', fillPrintHead);
-$('btn-print').addEventListener('click', () => window.print());
+// Browsers use the page title as the default PDF file name.
+const pageTitle = document.title;
+$('btn-print').addEventListener('click', () => {
+  document.title = KneeExport.fileBase(exportMeta());
+  window.print();
+});
+window.addEventListener('afterprint', () => { document.title = pageTitle; });
 $('btn-csv').addEventListener('click', downloadCsv);
 
 // Hide the phone result bar while the full result is on screen.

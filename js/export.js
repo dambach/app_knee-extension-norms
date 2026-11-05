@@ -55,13 +55,14 @@ const KneeExport = (() => {
       lines.push(row.map(cell).join(','));
     }
     // BOM so spreadsheet software detects UTF-8.
-    return '﻿' + lines.join('\r\n') + '\r\n';
+    return '\uFEFF' + lines.join('\r\n') + '\r\n';
   }
 
-  // The patient ID is never put in the file name.
-  const csvFilename = meta => `knee-extension-norms_${meta.measurementDate || 'undated'}.csv`;
+  // File names carry the measurement date, never the patient ID.
+  const fileBase = meta => `knee-extension-norms_${meta.measurementDate || 'undated'}`;
+  const csvFilename = meta => `${fileBase(meta)}.csv`;
 
-  return { CSV_COLUMNS, statusOf, notesOf, buildCsv, csvFilename };
+  return { CSV_COLUMNS, statusOf, notesOf, buildCsv, fileBase, csvFilename };
 })();
 
 if (typeof module !== 'undefined' && module.exports) module.exports = KneeExport;

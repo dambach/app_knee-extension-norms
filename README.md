@@ -23,7 +23,8 @@ the browser.
 
 Below the results, two exports use the current inputs and results:
 
-- **Print / Save as PDF**: an A4 report with the patient ID and measurement date, the inputs,
+- **Save as PDF**: opens the browser's print window with the file name already set
+  (choose "Save as PDF" as destination); an A4 report with the patient ID and measurement date, the inputs,
   the chart, the table of values with notes and a summary of each reference protocol.
 - **Download CSV**: one row per reference (inputs, predicted value, LLN, measured value in the
   reference unit, % of predicted, z-score, status, notes). Comma separator, dot decimals,

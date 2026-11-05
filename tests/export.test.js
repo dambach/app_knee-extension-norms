@@ -3,7 +3,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const { EQUATIONS, evaluate } = require('../js/equations.js');
-const { CSV_COLUMNS, statusOf, buildCsv, csvFilename } = require('../js/export.js');
+const { CSV_COLUMNS, statusOf, buildCsv, fileBase, csvFilename } = require('../js/export.js');
 
 const inputs = p => ({ side: 'right', ffm: NaN, lever: NaN, invalid: {}, ...p });
 const resultsFor = p => EQUATIONS.map(eq => ({ eq, r: evaluate(eq, p) }));
@@ -27,7 +27,7 @@ function parseCsv(text) {
   return rows;
 }
 const toObjects = csv => {
-  const [header, ...rows] = parseCsv(csv.replace(/^﻿/, ''));
+  const [header, ...rows] = parseCsv(csv.replace(/^\uFEFF/, ''));
   return { header, rows: rows.map(r => Object.fromEntries(header.map((h, i) => [h, r[i]]))) };
 };
 
@@ -36,7 +36,7 @@ const woman = inputs({ male: 0, age: 65, height: 160, weight: 60, ffm: 40, measu
 
 test('CSV has a BOM, the expected header and one row per reference', () => {
   const csv = buildCsv(man, resultsFor(man), meta);
-  assert.ok(csv.startsWith('﻿'));
+  assert.ok(csv.startsWith('\uFEFF'));
   assert.ok(csv.endsWith('\r\n'));
   const { header, rows } = toObjects(csv);
   assert.deepEqual(header, CSV_COLUMNS);
@@ -96,4 +96,5 @@ test('status wording and file name', () => {
   assert.equal(statusOf({ ok: true, z: 0.3 }), 'Within normal');
   assert.equal(csvFilename(meta), 'knee-extension-norms_2026-11-05.csv');
   assert.equal(csvFilename({}), 'knee-extension-norms_undated.csv');
+  assert.equal(fileBase(meta), 'knee-extension-norms_2026-11-05');
 });
