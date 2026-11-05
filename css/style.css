@@ -216,6 +216,7 @@ td.notes { color: var(--ink-2); }
 .export-field { display: flex; flex-direction: column; gap: 4px; flex: 1 1 180px; max-width: 260px; }
 .export-field label { font-size: 13px; font-weight: 500; color: var(--ink-2); }
 .export-field small { font-weight: 400; color: var(--muted); }
+.export-hint { font-size: 12px; color: var(--muted); }
 .export-field input {
   height: 44px; padding: 0 12px; font: inherit; color: var(--ink);
   background: var(--surface); border: 1px solid var(--border-strong); border-radius: 10px;

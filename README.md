@@ -34,6 +34,16 @@ Below the results, two exports use the current inputs and results:
 The patient ID (optional) and the measurement date are used only in the exported files. They
 are never stored or sent, and the patient ID is not put in the file name.
 
+## Privacy
+
+- No cookies, no tracking, no analytics, no storage of the values entered.
+- All calculations run in the browser; values entered are never sent anywhere. The PDF and CSV
+  exports are created on the user's device. Use a pseudonymous patient ID, not a name.
+- Fonts are served by [Bunny Fonts](https://fonts.bunny.net) (EU, no logging) instead of
+  Google Fonts.
+- The host, GitHub Pages, logs visitors' IP addresses for security
+  ([GitHub privacy statement](https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement)).
+
 ## Project layout
 
 ```

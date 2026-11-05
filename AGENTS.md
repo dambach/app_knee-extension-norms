@@ -18,4 +18,5 @@ Deployed by GitHub Pages from `main`: <https://dambach.github.io/app_knee-extens
   article, with its table or page; never invent or estimate one.
 - UI copy in US English, neutral (no "you"). The result is the main emphasis; orange means
   "below the lower limit of normal" only. Use the color tokens in `css/style.css`.
-- No patient data leaves the browser. Never commit the articles (PDF, DOCX).
+- No patient data leaves the browser; no third-party request except Bunny Fonts (no Google Fonts).
+  Never commit the articles (PDF, DOCX).

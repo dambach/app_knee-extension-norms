@@ -5,9 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Knee Extension Norms</title>
 <meta name="description" content="Isometric knee extensor strength at 90° knee flexion compared with published reference equations, as % of predicted and z-score against the lower limit of normal.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600&display=swap">
+<link rel="preconnect" href="https://fonts.bunny.net">
+<link rel="stylesheet" href="https://fonts.bunny.net/css?family=inter:400,500,600,700|space-grotesk:500,600&display=swap">
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -159,7 +158,8 @@
       <div class="export-fields">
         <div class="export-field">
           <label for="patient-id">Patient ID <small>optional</small></label>
-          <input id="patient-id" type="text" autocomplete="off" spellcheck="false" placeholder="—">
+          <input id="patient-id" type="text" autocomplete="off" spellcheck="false" placeholder="—" aria-describedby="patient-id-hint">
+          <small class="export-hint" id="patient-id-hint">A pseudonymous code, not a name</small>
         </div>
         <div class="export-field">
           <label for="measurement-date">Measurement date</label>
@@ -189,6 +189,7 @@
 
 <footer class="wrap site-footer">
   <p>Written and maintained by <a href="https://www.linkedin.com/in/damienbachasson/">Damien Bachasson</a>, Inserm Researcher, PT, PhD, HDR. Open source under the MIT License.</p>
+  <p id="privacy">Privacy. No cookies and no tracking. Values entered stay in the browser and are never sent; the PDF and CSV exports are created on this device. Fonts are served by Bunny Fonts (EU). The host, GitHub Pages, logs visitors' IP addresses for security.</p>
   <p>Disclaimer. For information purposes only. Not a substitute for professional medical advice, diagnosis or treatment. Any question regarding a medical condition or treatment should be addressed to a physician or other qualified health care provider.</p>
 </footer>
 
