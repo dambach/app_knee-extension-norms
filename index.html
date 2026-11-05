@@ -12,6 +12,16 @@
 </head>
 <body>
 
+<section class="print-only print-head" aria-hidden="true">
+  <p class="print-app">Knee Extension Norms · dambach.github.io/app_knee-extension-norms</p>
+  <h1>Knee extensor strength report</h1>
+  <dl class="print-meta">
+    <div><dt>Patient ID</dt><dd id="print-patient">—</dd></div>
+    <div><dt>Measurement date</dt><dd id="print-date">—</dd></div>
+    <div><dt>Generated</dt><dd id="print-generated">—</dd></div>
+  </dl>
+</section>
+
 <header class="site-header">
   <div class="wrap header-row">
     <a class="brand" href="#top" id="top">
@@ -36,6 +46,11 @@
 <section class="wrap intro">
   <h1>Knee extensor strength compared with healthy references</h1>
   <p class="lead">Isometric measurement with the knee at 90°: % of predicted and z-score against the lower limit of normal for three published reference equations.</p>
+</section>
+
+<section class="print-only print-inputs" aria-hidden="true">
+  <h2>Inputs</h2>
+  <dl class="print-grid" id="print-inputs"></dl>
 </section>
 
 <main class="wrap layout">
@@ -138,6 +153,31 @@
         </table>
       </div>
     </details>
+
+    <div class="export">
+      <h3>Export</h3>
+      <div class="export-fields">
+        <div class="export-field">
+          <label for="patient-id">Patient ID <small>optional</small></label>
+          <input id="patient-id" type="text" autocomplete="off" spellcheck="false" placeholder="—">
+        </div>
+        <div class="export-field">
+          <label for="measurement-date">Measurement date</label>
+          <input id="measurement-date" type="date">
+        </div>
+      </div>
+      <div class="export-actions">
+        <button type="button" class="btn" id="btn-print">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v8H6z"/></svg>
+          Print / Save as PDF
+        </button>
+        <button type="button" class="btn" id="btn-csv">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
+          Download CSV
+        </button>
+      </div>
+      <p class="export-note">Patient ID and date are used only in the exported files. Nothing is stored or sent.</p>
+    </div>
   </section>
 </main>
 
@@ -165,6 +205,7 @@
 <div class="tooltip" id="tooltip" role="tooltip"></div>
 
 <script src="js/equations.js"></script>
+<script src="js/export.js"></script>
 <script src="js/app.js"></script>
 </body>
 </html>

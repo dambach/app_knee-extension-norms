@@ -3,6 +3,8 @@
 
 // The z axis never extends beyond these bounds; more extreme values are pinned to the edge.
 const Z_FLOOR = -8, Z_CEIL = 4;
+// Last computed inputs and results, read by the export.
+let lastState = null;
 const FIELD_LABELS = { age: 'age', height: 'height', weight: 'weight', ffm: 'fat-free mass', measured: 'measured strength', lever: 'lever arm' };
 
 const $ = id => document.getElementById(id);
@@ -115,7 +117,7 @@ function rowHtml({ eq, r }, i, x, zMin, zMax) {
       <div class="plot"><div class="track"><div class="msg info">z-score not shown for women</div></div>
       <div class="vals"><p class="pct">${r.pct.toFixed(0)} %</p><p class="z">z —</p></div></div></div>`;
   }
-  const low = r.z < LLN_Z;
+  const low = KneeExport.statusOf(r) === 'Below LLN';
   const chip = low
     ? `<span class="chip low">${ICON.down}Below LLN</span>`
     : `<span class="chip ok">${ICON.check}Within normal</span>`;
@@ -171,7 +173,7 @@ function render() {
     const meas = r.ok ? `${fmt(r.measured, eq.unit)} ${u}` : '—';
     const z = r.ok && !r.pctOnly ? fmtZ(r.z) : '—';
     const pct = r.ok ? `${r.pct.toFixed(0)} %` : '—';
-    const notes = r.ok ? [...r.warnings, eq.trialNote, eq.deviceNote].filter(Boolean).join('; ') : r.reason;
+    const notes = KneeExport.notesOf(eq, r);
     return `<tr><td>${refName(eq)}${eq.sideSpecific ? ` (${p.side})` : ''}</td>
       <td class="num">${pred}</td><td class="num">${lln}</td><td class="num">${meas}</td>
       <td class="num">${pct}</td><td class="num">${z}</td><td class="notes">${notes}</td></tr>`;
@@ -189,6 +191,11 @@ function render() {
   }).join('');
 
   window.__results = results;
+  lastState = { p, results };
+  fillPrintInputs(p);
+  const canExport = results.some(x => x.r.ok);
+  $('btn-print').disabled = !canExport;
+  $('btn-csv').disabled = !canExport;
 }
 
 function renderRefs() {
@@ -243,6 +250,70 @@ rows.addEventListener('focusin', e => {
 });
 rows.addEventListener('focusout', () => tip.classList.remove('show'));
 
+// Export: printable report and CSV. Patient ID and date are read only here and
+// never stored or sent.
+const pad2 = n => String(n).padStart(2, '0');
+const localDate = d => `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+const localDateTime = d => `${localDate(d)} ${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
+const exportMeta = () => ({
+  patientId: $('patient-id').value.trim(),
+  measurementDate: $('measurement-date').value,
+  generatedAt: new Date().toISOString()
+});
+
+function fillPrintHead() {
+  const meta = exportMeta();
+  $('print-patient').textContent = meta.patientId || '—';
+  $('print-date').textContent = meta.measurementDate || '—';
+  $('print-generated').textContent = localDateTime(new Date());
+}
+
+function fillPrintInputs(p) {
+  const v = (x, u) => Number.isFinite(x) ? `${x} ${u}` : '—';
+  let strength = v(p.measured, UNIT_LABEL[p.unit]);
+  if (Number.isFinite(p.measured) && Number.isFinite(p.lever)) {
+    const other = p.unit === 'kg' ? 'Nm' : 'kg';
+    strength += ` (${fmt(convert(p.measured, p.unit, other, p.lever), other)} ${UNIT_LABEL[other]})`;
+  }
+  const items = [
+    ['Sex', p.male ? 'Male' : 'Female'], ['Age', v(p.age, 'yr')],
+    ['Height', v(p.height, 'cm')], ['Weight', v(p.weight, 'kg')],
+    ['Fat-free mass', v(p.ffm, 'kg')], ['Side tested', p.side === 'left' ? 'Left' : 'Right'],
+    ['Measured strength', strength], ['Lever arm', v(p.lever, 'cm')]
+  ];
+  $('print-inputs').innerHTML = items.map(([k, val]) => `<div><dt>${k}</dt><dd>${val}</dd></div>`).join('');
+}
+
+function downloadCsv() {
+  if (!lastState) return;
+  const meta = exportMeta();
+  const csv = KneeExport.buildCsv(lastState.p, lastState.results, meta);
+  const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = KneeExport.csvFilename(meta);
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 0);
+}
+
+// The table is part of the report: open it for printing, then restore it.
+const tableView = document.querySelector('details.table-view');
+let tableWasOpen = false;
+window.addEventListener('beforeprint', () => {
+  fillPrintHead();
+  tableWasOpen = tableView.open;
+  tableView.open = true;
+});
+window.addEventListener('afterprint', () => { tableView.open = tableWasOpen; });
+
+$('measurement-date').value = localDate(new Date());
+$('patient-id').addEventListener('input', fillPrintHead);
+$('measurement-date').addEventListener('input', fillPrintHead);
+$('btn-print').addEventListener('click', () => window.print());
+$('btn-csv').addEventListener('click', downloadCsv);
+
 // Hide the phone result bar while the full result is on screen.
 if ('IntersectionObserver' in window) {
   new IntersectionObserver(([entry]) => {
@@ -254,3 +325,4 @@ $('inputs').addEventListener('input', render);
 $('inputs').addEventListener('change', render);
 renderRefs();
 render();
+fillPrintHead();

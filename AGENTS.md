@@ -12,7 +12,7 @@ Deployed by GitHub Pages from `main`: <https://dambach.github.io/app_knee-extens
 ## Rules
 
 - Plain HTML, CSS and JavaScript: no build step, no dependency, classic `<script src>` (no ES modules).
-- `js/equations.js` holds the equations and calculations, with no DOM access. Any change to it needs
+- `js/equations.js` (equations, calculations) and `js/export.js` (CSV) have no DOM access. Any change to it needs
   a test and an update of `docs/references.md`, which records sources and design decisions.
 - Only references measured with the knee at 90° of flexion. Every value comes from the original
   article, with its table or page; never invent or estimate one.

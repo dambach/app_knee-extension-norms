@@ -19,13 +19,28 @@ Sources, checks and design decisions are documented in
 Open `index.html` in a browser. There is no build step, no server and no data leaves
 the browser.
 
+## Export
+
+Below the results, two exports use the current inputs and results:
+
+- **Print / Save as PDF**: an A4 report with the patient ID and measurement date, the inputs,
+  the chart, the table of values with notes and a summary of each reference protocol.
+- **Download CSV**: one row per reference (inputs, predicted value, LLN, measured value in the
+  reference unit, % of predicted, z-score, status, notes). Comma separator, dot decimals,
+  UTF-8 with BOM. Read it with `read.csv("file.csv", fileEncoding = "UTF-8-BOM")` in R or
+  `pandas.read_csv("file.csv", encoding="utf-8-sig")` in Python.
+
+The patient ID (optional) and the measurement date are used only in the exported files. They
+are never stored or sent, and the patient ID is not put in the file name.
+
 ## Project layout
 
 ```
 index.html            page markup
 css/style.css         styles (light and dark)
 js/equations.js       reference equations and calculations (no DOM, also loaded by the tests)
-js/app.js             form, chart, table and tooltip
+js/export.js          CSV export and result status wording (no DOM)
+js/app.js             form, chart, table, tooltip and export buttons
 tests/                Node tests of the equations
 docs/references.md    sources and decisions
 AGENTS.md             rules for coding agents and contributors

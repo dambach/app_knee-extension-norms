@@ -84,8 +84,8 @@ const EQUATIONS = [
     formula: '−982.2 + 12.6 × age − 50.5 × female + 742.7 × height (m) + 1.6 × BMI − 8.6 × age × height (m)<br>SEE: 32.16 N·m',
     citation: 'Tanguay S, Saey D, et al. Reference equations for quadriceps strength, endurance and power: a multicentre study. ERJ Open Res. 2023;9(5):00313-2023.',
     doi: '10.1183/23120541.00313-2023',
-    trialNote: 'Reference uses the mean of the 2 best trials; using the best trial instead slightly overestimates z.',
-    deviceNote: 'Measured on a Biodex: fixed dynamometry (strap and load cell) may give lower values in the strongest subjects.'
+    trialNote: 'Reference uses the mean of the 2 best trials; using the best trial instead slightly overestimates z',
+    deviceNote: 'Measured on a Biodex: fixed dynamometry (strap and load cell) may give lower values in the strongest subjects'
   }
 ];
 

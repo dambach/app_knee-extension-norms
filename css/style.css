@@ -30,7 +30,7 @@
   --font-body: Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --font-display: "Space Grotesk", Inter, system-ui, sans-serif;
 }
-@media (prefers-color-scheme: dark) {
+@media screen and (prefers-color-scheme: dark) {
   :root {
     color-scheme: dark;
     --ground: #141413;
@@ -209,6 +209,32 @@ th { color: var(--muted); font-weight: 600; font-size: 12px; text-transform: upp
 td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
 td.notes { color: var(--ink-2); }
 
+/* Export */
+.export { margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--rule); }
+.export h3 { margin: 0 0 10px; font-size: 16px; }
+.export-fields { display: flex; flex-wrap: wrap; gap: 12px 16px; }
+.export-field { display: flex; flex-direction: column; gap: 4px; flex: 1 1 180px; max-width: 260px; }
+.export-field label { font-size: 13px; font-weight: 500; color: var(--ink-2); }
+.export-field small { font-weight: 400; color: var(--muted); }
+.export-field input {
+  height: 44px; padding: 0 12px; font: inherit; color: var(--ink);
+  background: var(--surface); border: 1px solid var(--border-strong); border-radius: 10px;
+}
+.export-field input:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.export-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+.btn {
+  display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px;
+  border: 1px solid var(--border-strong); border-radius: 10px; background: var(--surface);
+  font: inherit; font-weight: 500; color: var(--ink); cursor: pointer;
+}
+.btn:hover { background: var(--surface-sunk); }
+.btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.btn:disabled { color: var(--faint); cursor: not-allowed; background: var(--surface); }
+.export-note { margin: 10px 0 0; font-size: 12.5px; color: var(--muted); }
+
+/* Print-only blocks, shown by the print stylesheet */
+.print-only { display: none; }
+
 /* Reference cards */
 .refs { margin-top: 48px; }
 .refs h2 { margin: 0; font-size: 24px; }
@@ -285,6 +311,49 @@ td.notes { color: var(--ink-2); }
   .cell-pct { margin: 0; display: flex; align-items: center; gap: 4px; font-family: var(--font-display); font-weight: 600; font-size: 22px; line-height: 1.2; }
   .cell-pct.empty { color: var(--faint); }
   .cell-z { margin: 0; font-size: 12px; color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+}
+
+/* Printable report (Print / Save as PDF) */
+@media print {
+  @page { size: A4; margin: 14mm; }
+  body { background: #FFFFFF; padding: 0; font-size: 10.5pt; }
+  .site-header, .intro, .form-card, .sticky-bar, .tooltip, .export,
+  details.table-view > summary, .nav { display: none !important; }
+  .print-only { display: block; }
+  .wrap { max-width: none; padding: 0; }
+  .layout { display: block; }
+  .card { box-shadow: none; border-color: #D9D4CA; }
+  .result-card { padding: 14px 18px; break-inside: auto; }
+
+  .print-head { margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid #D9D4CA; }
+  .print-app { margin: 0 0 4px; font-size: 9pt; color: var(--muted); }
+  .print-head h1 { margin: 0 0 8px; font-size: 18pt; }
+  .print-meta { display: flex; flex-wrap: wrap; gap: 6px 28px; margin: 0; }
+  .print-meta div, .print-grid div { display: flex; gap: 8px; }
+  .print-meta dt, .print-grid dt { color: var(--muted); }
+  .print-meta dd, .print-grid dd { margin: 0; font-weight: 600; }
+  .print-inputs { margin-bottom: 14px; }
+  .print-inputs h2 { margin: 0 0 6px; font-size: 13pt; }
+  .print-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 3px 24px; margin: 0; }
+
+  .chart-row, .ref-card, tr, .legend { break-inside: avoid; }
+  .chart-row { padding: 10px 0; }
+  .pct { font-size: 20pt; }
+  .track, .track *, .chip, .dot-flag, .swatch-zone, .swatch-pred {
+    -webkit-print-color-adjust: exact; print-color-adjust: exact;
+  }
+  .chart-row:hover .pt { box-shadow: 0 0 0 3px var(--surface); }
+  details.table-view { margin-top: 10px; }
+  table { font-size: 9pt; }
+
+  .refs { margin-top: 18px; }
+  .refs h2 { font-size: 14pt; }
+  .refs-lead { margin-bottom: 10px; }
+  .ref-grid { display: block; }
+  .ref-card { margin-bottom: 10px; padding: 12px 16px; }
+  .ref-card dl { font-size: 9.5pt; }
+  .site-footer { margin-top: 14px; padding-top: 10px; font-size: 8.5pt; }
+  a { color: inherit; text-decoration: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
