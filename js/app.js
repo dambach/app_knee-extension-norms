@@ -252,6 +252,15 @@ rows.addEventListener('focusin', e => {
   showTip(row, b.left + b.width / 2, b.bottom);
 });
 rows.addEventListener('focusout', () => tip.classList.remove('show'));
+// Touch screens have no mouseleave and tapping a blank area may not remove focus:
+// a tap outside the rows, a scroll or Escape closes the tooltip.
+const hideTip = () => {
+  tip.classList.remove('show');
+  if (document.activeElement && document.activeElement.classList.contains('chart-row')) document.activeElement.blur();
+};
+document.addEventListener('pointerdown', e => { if (!e.target.closest('.chart-row')) hideTip(); });
+window.addEventListener('scroll', () => tip.classList.remove('show'), { passive: true });
+rows.addEventListener('keydown', e => { if (e.key === 'Escape') hideTip(); });
 
 // Export: printable report and CSV. Patient ID and date are read only here and
 // never stored or sent.
