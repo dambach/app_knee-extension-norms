@@ -28,6 +28,7 @@ js/equations.js       reference equations and calculations (no DOM, also loaded 
 js/app.js             form, chart, table and tooltip
 tests/                Node tests of the equations
 docs/references.md    sources and decisions
+AGENTS.md             rules for coding agents and contributors
 ```
 
 `js/equations.js` is a classic script (not an ES module) so that the page keeps

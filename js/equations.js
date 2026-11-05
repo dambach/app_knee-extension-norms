@@ -31,7 +31,7 @@ const EQUATIONS = [
       position: 'Seated, hip and knee at 90° flexion', // Table 1
       leg: 'Right and left (side-specific equations)',
       trial: 'Best of ≥ 3 trials (extra trial if 2 differed by ≥ 10 %)',
-      population: '262 healthy French adults, 20–80 yr. Men: 43.6 ± 15.8 yr, 78.0 ± 11.4 kg; women: 46.5 ± 17.1 yr, 61.4 ± 10.3 kg'
+      population: '262 healthy adults (FR), 20–80 yr. Men: 43.6 ± 15.8 yr, 78.0 ± 11.4 kg; women: 46.5 ± 17.1 yr, 61.4 ± 10.3 kg'
     },
     formula: 'Right: 66.37 − 0.87 × age + 46.09 × male + 1.21 × weight<br>Left: 78.00 − 0.87 × age + 49.70 × male + 0.96 × weight<br>Residual SD: 35.05 (right), 33.93 (left) N·m',
     citation: 'Hogrel JY, Payan CA, Ollivier G, et al. Development of a French isometric strength normative database for adults using quantitative muscle testing. Arch Phys Med Rehabil. 2007;88(10):1289–97.',
@@ -120,24 +120,28 @@ function convert(value, from, to, leverCm) {
 
 // Applies one reference equation to the inputs `p`
 // ({ male, side, age, height, weight, ffm, measured, unit, lever, invalid }).
+// When the result cannot be computed, `field` names the input to enter or fix
+// and `invalid` is true when that input is out of range.
 function evaluate(eq, p) {
   const bad = eq.needs.find(k => p.invalid[k]);
-  if (bad) return { ok: false, reason: `Check ${NEED_LABELS[bad]} (${rangeText(LIMITS[bad])})` };
+  if (bad) return { ok: false, field: bad, invalid: true, reason: `Check ${NEED_LABELS[bad]} (${rangeText(LIMITS[bad])})` };
   const missing = eq.needs.filter(k => Number.isNaN(p[k])).map(k => NEED_LABELS[k]);
-  if (missing.length) return { ok: false, reason: `Enter ${missing.join(', ')}` };
+  if (missing.length) {
+    return { ok: false, field: eq.needs.find(k => Number.isNaN(p[k])), reason: `Enter ${missing.join(', ')}` };
+  }
   const predicted = eq.predict(p);
   const sd = eq.sd(p);
   if (!(predicted > 0)) return { ok: false, reason: 'Predicted value ≤ 0 for these inputs' };
   const lln = predicted + LLN_Z * sd;
   if (p.invalid.measured) {
-    return { ok: false, predicted, lln, reason: `Check measured strength (${rangeText(MEASURED_LIMITS[p.unit])})` };
+    return { ok: false, predicted, lln, field: 'measured', invalid: true, reason: `Check measured strength (${rangeText(MEASURED_LIMITS[p.unit])})` };
   }
-  if (Number.isNaN(p.measured)) return { ok: false, predicted, lln, reason: 'Enter measured strength' };
+  if (Number.isNaN(p.measured)) return { ok: false, predicted, lln, field: 'measured', reason: 'Enter measured strength' };
   if (p.unit !== eq.unit && p.invalid.lever) {
-    return { ok: false, predicted, lln, reason: `Check lever arm (${rangeText(LIMITS.lever)})` };
+    return { ok: false, predicted, lln, field: 'lever', invalid: true, reason: `Check lever arm (${rangeText(LIMITS.lever)})` };
   }
   if (p.unit !== eq.unit && Number.isNaN(p.lever)) {
-    return { ok: false, predicted, lln, reason: `Enter lever arm to convert to ${UNIT_LABEL[eq.unit]}` };
+    return { ok: false, predicted, lln, field: 'lever', reason: `Enter lever arm to convert to ${UNIT_LABEL[eq.unit]}` };
   }
   const measured = convert(p.measured, p.unit, eq.unit, p.lever);
   const warnings = [];
