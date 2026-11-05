@@ -232,6 +232,9 @@ function showTip(row, clientX, clientY) {
   let left = clientX + pad, top = clientY + pad;
   if (left + rect.width > window.innerWidth - 8) left = clientX - rect.width - pad;
   if (top + rect.height > window.innerHeight - 8) top = clientY - rect.height - pad;
+  // Keep the whole tooltip on screen (phones: the tap is near the middle).
+  left = Math.max(8, Math.min(left, window.innerWidth - rect.width - 8));
+  top = Math.max(8, Math.min(top, window.innerHeight - rect.height - 8));
   tip.style.left = left + 'px';
   tip.style.top = top + 'px';
   tip.classList.add('show');

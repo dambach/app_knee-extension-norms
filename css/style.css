@@ -261,7 +261,7 @@ td.notes { color: var(--ink-2); }
   background: var(--surface); color: var(--ink);
   border: 1px solid var(--border); border-radius: 10px;
   box-shadow: 0 6px 20px rgba(29, 28, 26, .14);
-  padding: 8px 12px; font-size: 13px; line-height: 1.45; max-width: 290px;
+  padding: 8px 12px; font-size: 13px; line-height: 1.45; max-width: min(290px, calc(100vw - 16px));
   opacity: 0; transition: opacity .1s;
 }
 .tooltip.show { opacity: 1; }
