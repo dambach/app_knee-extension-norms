@@ -59,6 +59,7 @@ doi:10.1183/23120541.00313-2023
 | Weakness | LLN at the 5th percentile | Methods |
 | Sample | 158 healthy adults, 40–89 yr, 47 % men; 62 ± 12 yr, 1.69 ± 0.08 m, BMI 25.8 ± 4.0 | Methods, Table 1 |
 | Trial kept | **Mean of the 2 best** reproducible (within 10 %) of 5 trials | Online supplement |
+| Device note shown in the app | Measured on a Biodex: fixed dynamometry (strap and load cell) may give lower values in the strongest subjects | See cross-check below |
 
 ## References not used
 

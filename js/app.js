@@ -171,7 +171,7 @@ function render() {
     const meas = r.ok ? `${fmt(r.measured, eq.unit)} ${u}` : '—';
     const z = r.ok && !r.pctOnly ? fmtZ(r.z) : '—';
     const pct = r.ok ? `${r.pct.toFixed(0)} %` : '—';
-    const notes = r.ok ? [...r.warnings, eq.trialNote].filter(Boolean).join('; ') : r.reason;
+    const notes = r.ok ? [...r.warnings, eq.trialNote, eq.deviceNote].filter(Boolean).join('; ') : r.reason;
     return `<tr><td>${refName(eq)}${eq.sideSpecific ? ` (${p.side})` : ''}</td>
       <td class="num">${pred}</td><td class="num">${lln}</td><td class="num">${meas}</td>
       <td class="num">${pct}</td><td class="num">${z}</td><td class="notes">${notes}</td></tr>`;
@@ -219,7 +219,7 @@ function showTip(row, clientX, clientY) {
        <div class="tt-row">Measured <b>${fmt(r.measured, eq.unit)} ${u}</b></div>
        <div class="tt-row">% predicted <b>${r.pct.toFixed(0)} %</b></div>
        ${r.pctOnly ? '' : `<div class="tt-row">z-score <b>${fmtZ(r.z)}</b></div>`}` +
-      [...r.warnings, eq.trialNote].filter(Boolean).map(w => `<div class="tt-note">${w}</div>`).join('')
+      [...r.warnings, eq.trialNote, eq.deviceNote].filter(Boolean).map(w => `<div class="tt-note">${w}</div>`).join('')
     : `<div class="tt-row">${r.reason}</div>`);
   const pad = 14, rect = tip.getBoundingClientRect();
   let left = clientX + pad, top = clientY + pad;
