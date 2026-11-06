@@ -1,6 +1,6 @@
 # Knee extension norms
 
-A small web page that compares **isometric knee extensor strength measured at 90° of
+A small web page that compares **isometric knee extension strength measured at 90° of
 knee flexion** with published reference equations from healthy adults. For each
 reference it gives the **% of predicted** and the **z-score** against the lower limit
 of normal (LLN, 5th percentile).

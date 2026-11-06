@@ -8,7 +8,7 @@ shown by the app. The articles themselves are not stored in this repository.
 
 The app compares an **isometric knee extension** measurement taken with the
 **knee at 90° of flexion** against reference equations whose protocol uses the
-same knee angle. Knee extensor torque depends strongly on knee angle, so norms
+same knee angle. Knee extension torque depends strongly on knee angle, so norms
 measured at another angle are not used.
 
 ## References used

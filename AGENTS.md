@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Static web page comparing isometric knee extensor strength (knee at 90°) with published
+Static web page comparing isometric knee extension strength (knee at 90°) with published
 reference equations: % of predicted and z-score against the lower limit of normal.
 Deployed by GitHub Pages from `main`: <https://dambach.github.io/app_knee-extension-norms/>
 
